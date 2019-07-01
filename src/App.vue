@@ -1,6 +1,9 @@
 <template>
   <div id="app">
     <div>
+      <input v-model="room">
+      <button @click="join">join</button>
+      <br>
       <input v-model="message">
     <button @click="createNewMessage">Send</button>
       <ul v-for="(value,index) in listMessage" :key="index">
@@ -17,13 +20,13 @@ export default {
   data(){
     return{
       listMessage: [],
-      message: ''
+      message: '',
+      room: ''
     }
   },
   created(){
-    console.log(this.$socket);
-    this.sockets.subscribe('message',(data)=>{
-      console.log(data);
+    this.sockets.subscribe('room-message',(data)=>{
+      console.log(data)
       this.listMessage = [...this.listMessage,data];
     })
   },
@@ -39,8 +42,11 @@ export default {
   methods:{
     createNewMessage(){
       console.log('sss')
-      this.$socket.emit('message',this.message);
+      this.$socket.emit('message',{message:this.message,room:this.room});
       this.listMessage.push(`You : ${this.message}`)
+    },
+    join(){
+      this.$socket.emit('join',this.room);
     }
   }
 }
