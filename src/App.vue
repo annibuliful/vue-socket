@@ -1,17 +1,47 @@
 <template>
   <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+    <div>
+      <input v-model="message">
+    <button @click="createNewMessage">Send</button>
+      <ul v-for="(value,index) in listMessage" :key="index">
+        <li>{{value}}</li>
+      </ul>
+    </div>
   </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
 
 export default {
   name: 'app',
-  components: {
-    HelloWorld
+  data(){
+    return{
+      listMessage: [],
+      message: ''
+    }
+  },
+  created(){
+    console.log(this.$socket);
+    this.sockets.subscribe('message',(data)=>{
+      console.log(data);
+      this.listMessage = [...this.listMessage,data];
+    })
+  },
+  sockets: {
+    connect() {
+      console.log('connectwwwww')
+    },
+
+    disconnect() {
+      console.log('disconnectssssss')
+    }
+  },
+  methods:{
+    createNewMessage(){
+      console.log('sss')
+      this.$socket.emit('message',this.message);
+      this.listMessage.push(`You : ${this.message}`)
+    }
   }
 }
 </script>
